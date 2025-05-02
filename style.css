@@ -1,48 +1,28 @@
 body {
   font-family: sans-serif;
-  background: #f7f7f7;
-  padding: 20px;
-}
-
-.container {
-  max-width: 600px;
-  margin: auto;
-  background: white;
+  background: #f9f9f9;
   padding: 30px;
-  border-radius: 10px;
 }
 
 input, textarea {
   width: 100%;
-  padding: 10px;
+  padding: 12px;
   margin-bottom: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
 }
 
 button {
   padding: 10px 15px;
-  background-color: #007BFF;
+  background: #007BFF;
   color: white;
   border: none;
+  border-radius: 6px;
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0056b3;
-}
-
 ul {
-  list-style-type: none;
+  list-style: none;
   padding: 0;
 }
 
-li {
-  background: #eee;
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 6px;
-}
-
-.claimed {
-  background: #ccc;
-  text-decoration: line-through;
-}
