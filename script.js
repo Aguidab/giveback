@@ -1,44 +1,96 @@
-let items = JSON.parse(localStorage.getItem("givebackItems")) || [];
+// Paste your Firebase config from Firebase Console here
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+};
 
-function saveItems() {
-  localStorage.setItem("givebackItems", JSON.stringify(items));
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// LOGIN
+function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  auth.signInWithEmailAndPassword(email, password)
+    .then(() => {
+      window.location.href = "dashboard.html";
+    })
+    .catch(err => {
+      document.getElementById("message").innerText = err.message;
+    });
 }
 
-function renderItems() {
-  const list = document.getElementById("itemList");
-  list.innerHTML = "";
+// SIGN UP
+function signup() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-  items.forEach((item, index) => {
-    const li = document.createElement("li");
-    li.className = item.claimed ? "claimed" : "";
-    li.innerHTML = `
-      <strong>${item.name}</strong> — ${item.location}
-      <p>${item.description}</p>
-      <button onclick="claimItem(${index})" ${item.claimed ? "disabled" : ""}>
-        ${item.claimed ? "Claimed" : "Claim"}
-      </button>
-    `;
-    list.appendChild(li);
+  auth.createUserWithEmailAndPassword(email, password)
+    .then(() => {
+      window.location.href = "dashboard.html";
+    })
+    .catch(err => {
+      document.getElementById("message").innerText = err.message;
+    });
+}
+
+// POST ITEM
+function postItem() {
+  const itemName = document.getElementById("itemName").value;
+  const itemLocation = document.getElementById("itemLocation").value;
+  const itemDescription = document.getElementById("itemDescription").value;
+
+  db.collection("items").add({
+    name: itemName,
+    location: itemLocation,
+    description: itemDescription,
+    claimed: false,
+    postedBy: auth.currentUser.email
+  })
+  .then(() => {
+    alert("Item posted!");
+    loadItems();
   });
 }
 
-function claimItem(index) {
-  items[index].claimed = true;
-  saveItems();
-  renderItems();
+// LOAD ITEMS
+function loadItems() {
+  const list = document.getElementById("itemList");
+  list.innerHTML = "";
+
+  db.collection("items").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <strong>${data.name}</strong> – ${data.location}<br>
+        ${data.description}
+        <br>
+        ${data.claimed ? "✅ Claimed" : `<button onclick="claimItem('${doc.id}')">Claim</button>`}
+      `;
+      list.appendChild(li);
+    });
+  });
 }
 
-document.getElementById("itemForm").addEventListener("submit", function(e) {
-  e.preventDefault();
-  const name = document.getElementById("name").value;
-  const location = document.getElementById("location").value;
-  const description = document.getElementById("description").value;
+// CLAIM ITEM
+function claimItem(id) {
+  db.collection("items").doc(id).update({
+    claimed: true
+  }).then(() => {
+    alert("Item claimed!");
+    loadItems();
+  });
+}
 
-  items.push({ name, location, description, claimed: false });
-  saveItems();
-  renderItems();
+if (window.location.pathname.includes("dashboard")) {
+  auth.onAuthStateChanged(user => {
+    if (user) loadItems();
+    else window.location.href = "login.html";
+  });
+}
 
-  this.reset();
-});
-
-renderItems();
