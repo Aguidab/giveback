@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>GiveBack - Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h2>Dashboard</h2>
+  <p>Welcome! Post or claim an item.</p>
+
+  <input type="text" id="itemName" placeholder="Item Name" />
+  <input type="text" id="itemLocation" placeholder="Location" />
+  <textarea id="itemDescription" placeholder="Description"></textarea>
+  <button onclick="postItem()">Post Item</button>
+
+  <h3>Items Available</h3>
+  <ul id="itemList"></ul>
+
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.3.1/firebase-firestore.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
